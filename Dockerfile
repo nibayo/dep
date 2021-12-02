@@ -7,6 +7,7 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 COPY ./scraper.py ./scraper.py
 RUN mkdir ./img
+RUN RUN apt-get -y update && apt-get install -y libzbar-dev
 RUN pip3 install -r requirements.txt
 
 EXPOSE 4000
