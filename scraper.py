@@ -1,6 +1,6 @@
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, jsonify, request
+from flask_apscheduler import APScheduler
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from os import error
@@ -19,7 +19,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-scheduler = BackgroundScheduler(timezone="Europe/Berlin")
+scheduler = APScheduler()
 
 schedStat = 0
 old_data = []
@@ -483,7 +483,7 @@ def main():
     global old_data
     global browser
     if firstStart:
-        browser = getBrowserConnect('https://www.amazon.co.uk/')
+        getBrowserConnect('https://www.amazon.co.uk/')
         firstStart = False
     old_data, title_Hashs = initData("./Dataset.json")
     for url in ALL_URLS:
@@ -516,12 +516,12 @@ def start():
             global scheduler
             if schedStat == 0:
                 scheduler.start()
-                scheduler.add_job(main, 'interval',
+                scheduler.add_job(id='Scheduled Task', func=main, trigger='interval',
                                   minutes=int(freq), max_instances=1)
             elif schedStat == -1:
-                scheduler = BackgroundScheduler(timezone="Europe/Berlin")
+                scheduler = APScheduler()
                 scheduler.start()
-                scheduler.add_job(main, 'interval',
+                scheduler.add_job(id='Scheduled Task', func=main, trigger='interval',
                                   minutes=int(freq), max_instances=1)
             else:
                 return jsonify({"message": "Job already running", "val": 1})
